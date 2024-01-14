@@ -1,7 +1,7 @@
 import utils.func.torch_tools as tools
 from data_related import data_related as dr
 from mnistinccd_c import MNISTinCCD_C as DataSet
-from networks.nets.wzynet_essay import WZYNetEssay as Net
+from networks.nets.adawzynet import AdaWZYNet as Net
 from utils.hypa_control import ControlPanel
 
 net_name = Net.__name__.lower()
@@ -17,9 +17,8 @@ cp = ControlPanel(
 
 print('正在整理数据……')
 data = DataSet(
-    '../../data/', '2023-11-12-17.55', Net,
-    cp['data_portion'],
-    lazy=cp['lazy'], f_req_sha=Net.required_shape
+    where='../../data/', which='2023-11-12-17.55', module=Net,
+    data_portion=cp['data_portion'], lazy=cp['lazy'], f_req_sha=Net.required_shape
 )
 acc_func = DataSet.accuracy
 
@@ -47,7 +46,9 @@ for trainer in cp:
         print(f'正在构造{net_name}……')
         # 构建网络
         net = Net(
-            DataSet.fea_channel, base, DataSet.lb_channel,
+            DataSet.fea_channel,
+            train_ds.feature_shape[1], 2, [train_ds.label_shape[0]],
+            base,
             device=device, init_meth=init_meth
         )
         trainer.register_net(net)
