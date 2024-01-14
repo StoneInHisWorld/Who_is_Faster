@@ -19,8 +19,8 @@ from utils.func.img_tools import read_img
 aperture_size = 16
 border_size = 8
 gap_size = 1 * aperture_size
-n_row = 8
-n_col = 8
+n_row = 4
+n_col = 4
 xv = [border_size + i * (aperture_size + gap_size) for i in range(n_row)]
 yv = [border_size + i * (aperture_size + gap_size) for i in range(n_col)]
 yv, xv = np.meshgrid(xv, yv)
@@ -163,20 +163,21 @@ class MNISTinCCD_C(SelfDefinedDataSet):
                   loss_es: torch.Tensor,
                   ) -> Any:
         print('正在拼装结果……')
-        ret = []
         inp_s = ttools.tensor_to_img(inputs, MNISTinCCD_C.fea_mode)
-        pre_s = ttools.tensor_to_img(predictions, MNISTinCCD_C.lb_mode)
-        lb_s = ttools.tensor_to_img(labels, MNISTinCCD_C.lb_mode)
+        pre_s = torch.argmax(predictions, dim=1)
+        lb_s = torch.argmax(labels, dim=1)
         # 制作输入、输出、标签对照图
         ret = itools.concat_imgs(
             *[
-                [(inp, 'input'), (pre, 'prediction'), (lb, 'labels')]
-                for inp, pre, lb in zip(inp_s, pre_s, lb_s)
+                [(inp, 'input')]
+                for inp in inp_s
             ],
             comment=[
-                f'acc = {acc * 100: .3f}%, loss = {ls: .5f}'
-                for acc, ls in zip(acc_s, loss_es)
-            ]
+                f'prediction = {pre}\n'
+                f'label = {lb}, judge = {pre == lb}'
+                for pre, lb in zip(pre_s, lb_s)
+            ],
+            text_size=15, border_size=25
         )
         return ret
 
