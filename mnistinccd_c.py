@@ -173,11 +173,13 @@ class MNISTinCCD_C(SelfDefinedDataSet):
                 for inp in inp_s
             ],
             comment=[
-                f'prediction = {pre}\n'
-                f'label = {lb}, judge = {pre == lb}'
+                f'\n'
+                f'pred = {pre}\n'
+                f'label = {lb}\n'
                 for pre, lb in zip(pre_s, lb_s)
             ],
-            text_size=15, border_size=25
+            text_size=10, border_size=5,
+            required_shape=(720, 1280)
         )
         return ret
 

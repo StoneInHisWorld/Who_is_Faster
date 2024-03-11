@@ -31,7 +31,8 @@ del data
 for trainer in cp:
     with trainer as hps:
         # 读取训练超参数
-        max_load, base, num_epochs, batch_size, ls_fn, lr, optim_str, w_decay, init_meth, comment = hps
+        max_load, base, num_epochs, batch_size, ls_fn, lr, optim_str, w_decay, init_meth, bn_momen, dropout_rate,\
+            comment = hps
         device = cp.device
         for ds in [train_ds, test_ds]:
             ds.to(device)

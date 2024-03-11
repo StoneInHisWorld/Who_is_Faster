@@ -6,14 +6,14 @@ from networks.nets.adawzynet import AdaWZYNet as Net
 
 net_name = Net.__name__.lower()
 max_load = 5000
-read_queue = range(24, 28)
+read_queue = range(1, 4)
 device = 'cpu'
 log_path = f'../../log/{net_name}_log.csv'
 
 print('正在整理数据……')
 data = DataSet(
     where='../../data/', which='2023-11-12-17.55', module=Net,
-    data_portion=1, lazy=False
+    data_portion=0.01, lazy=False
 )
 acc_func = DataSet.accuracy
 
