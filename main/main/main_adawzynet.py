@@ -1,4 +1,3 @@
-import utils.func.torch_tools as tools
 from data_related import data_related as dr
 from mnistinccd_c import MNISTinCCD_C as DataSet
 from networks.nets.adawzynet import AdaWZYNet as Net
@@ -55,17 +54,15 @@ for trainer in cp:
 
         print(f'本次训练位于设备{device}上')
         # 进行训练准备
-        optimizer = tools.get_optimizer(net, optim_str, lr, w_decay)
-        ls_fn = tools.get_loss(ls_fn)
-        history = net.train_(
-            train_iter, valid_iter=valid_iter, optimizer=optimizer, num_epochs=num_epochs,
-            ls_fn=ls_fn, acc_fn=acc_func
+        net.prepare_training(
+            (optim_str, lr, w_decay), {},
+            (), (ls_fn, ), {}
         )
-        # history = net.train__(
-        #     train_iter, optimizer, num_epochs, ls_fn, acc_func, valid_iter
-        # )
+        history = net.train_(
+            train_iter, acc_func, num_epochs, valid_iter=valid_iter
+        )
 
         print('测试中……')
-        test_acc, test_ls = net.test_(test_iter, acc_func, ls_fn)
-        cp.register_result(history, test_acc, test_ls, ls_fn=ls_fn, acc_fn=acc_func.__name__)
-        del ls_fn, optimizer, history, net
+        test_log = net.test_(test_iter, acc_func, net.ls_fn)
+        cp.register_result(history, test_log)
+        del history, net
