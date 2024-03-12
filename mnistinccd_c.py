@@ -1,5 +1,5 @@
 import os
-from typing import Iterable, Any
+from typing import Iterable, Any, Sized
 
 import numpy as np
 import pandas as pd
@@ -109,7 +109,7 @@ class MNISTinCCD_C(SelfDefinedDataSet):
         labels += file.values[:, 1].tolist()
 
     @staticmethod
-    def read_fea_fn(index: Iterable, n_worker: int = 1) -> Iterable:
+    def read_fea_fn(index: Iterable or Sized, n_worker: int = 1) -> Iterable:
         """
         加载特征集数据批所用方法
         :param n_worker: 使用的处理机数目，若>1，则开启多线程处理
@@ -124,15 +124,18 @@ class MNISTinCCD_C(SelfDefinedDataSet):
             # (itools.binarize_img, (127, ), {})
         ]
         if int(n_worker) > 1:
-            def task(indexes):
-                ret = []
-                for i in indexes:
-                    ret.append(
-                        read_img(i, MNISTinCCD_C.fea_mode, False, *preprocess)
-                    )
-                return ret
+            with tqdm(total=len(index), unit='张', position=0, desc=f"读取特征集图片中……", mininterval=1,
+                      leave=True) as pbar:
+                def task(indexes):
+                    ret = []
+                    for i in indexes:
+                        ret.append(
+                            read_img(i, MNISTinCCD_C.fea_mode, False, *preprocess)
+                        )
+                        pbar.update(1)
+                    return ret
 
-            data_slice = pytools.iterable_multi_process(index, task, False, n_worker, '读取特征集图片中……')
+            data_slice = pytools.iterable_multi_process(index, task, True, n_worker, '读取特征集图片中……')
         else:
             with tqdm(index, unit='张', position=0, desc=f"读取特征集图片中……", mininterval=1, leave=True) as pbar:
                 for index in pbar:
@@ -152,7 +155,7 @@ class MNISTinCCD_C(SelfDefinedDataSet):
         return index
 
     @staticmethod
-    def accuracy(Y_HAT: torch.Tensor, Y: torch.Tensor) -> torch.Tensor or float:
+    def accuracy(Y_HAT: torch.Tensor, Y: torch.Tensor, size_average=True) -> torch.Tensor or float:
         return data_related.data_related.single_argmax_accuracy(Y_HAT, Y)
 
     @staticmethod
