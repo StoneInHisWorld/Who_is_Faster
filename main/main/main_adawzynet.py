@@ -31,14 +31,14 @@ del data
 for trainer in cp:
     with trainer as hps:
         # 读取训练超参数
-        max_load, base, num_epochs, batch_size, ls_fn, lr, optim_str, w_decay, init_meth, bn_momen, dropout_rate,\
+        base, n_epochs, batch_size, ls_fn, lr, optim_str, w_decay, init_meth, bn_momen, dropout_rate,\
             comment = hps
         device = cp.device
         for ds in [train_ds, test_ds]:
             ds.to(device)
         # 获取数据迭代器并注册数据预处理函数
         train_iter, valid_iter = [
-            dr.to_loader(train_ds, batch_size, sampler=sampler, max_load=max_load)
+            dr.to_loader(train_ds, batch_size, sampler=sampler)
             for sampler in [train_sampler, valid_sampler]
         ]
         test_iter = dr.to_loader(test_ds, batch_size)
@@ -56,14 +56,14 @@ for trainer in cp:
         print(f'本次训练位于设备{device}上')
         # 进行训练准备
         net.prepare_training(
-            (optim_str, lr, w_decay), {},
-            (), (ls_fn, ), {}
+            (optim_str, {'lr': lr, 'w_decay': w_decay}),
+            ([], ()), (ls_fn, ), {}
         )
         history = net.train_(
-            train_iter, acc_func, num_epochs, valid_iter=valid_iter
+            train_iter, acc_func, n_epochs, valid_iter=valid_iter
         )
 
-        print('测试中……')
-        test_log = net.test_(test_iter, acc_func, net.ls_fn)
+        # 测试
+        test_log = net.test_(test_iter, acc_func)
         cp.register_result(history, test_log)
         del history, net
