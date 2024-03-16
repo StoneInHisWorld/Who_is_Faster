@@ -1,5 +1,5 @@
 import os
-from typing import Iterable, Any, Sized
+from typing import Iterable, Any, Sized, List
 
 import numpy as np
 import pandas as pd
@@ -156,15 +156,10 @@ class MNISTinCCD_C(SelfDefinedDataSet):
 
     @staticmethod
     def accuracy(Y_HAT: torch.Tensor, Y: torch.Tensor, size_average=True) -> torch.Tensor or float:
-        return data_related.data_related.single_argmax_accuracy(Y_HAT, Y)
+        return data_related.data_related.single_argmax_accuracy(Y_HAT, Y, size_average)
 
     @staticmethod
-    def unwrap_fn(inputs: torch.Tensor,
-                  predictions: torch.Tensor,
-                  labels: torch.Tensor,
-                  acc_s: torch.Tensor,
-                  loss_es: torch.Tensor,
-                  ) -> Any:
+    def unwrap_fn(inputs, predictions, labels, acc_s, loss_es, comments) -> Any:
         print('正在拼装结果……')
         inp_s = ttools.tensor_to_img(inputs, MNISTinCCD_C.fea_mode)
         pre_s = torch.argmax(predictions, dim=1)
@@ -175,14 +170,14 @@ class MNISTinCCD_C(SelfDefinedDataSet):
                 [(inp, 'input')]
                 for inp in inp_s
             ],
-            comment=[
-                f'\n'
-                f'pred = {pre}\n'
-                f'label = {lb}\n'
-                for pre, lb in zip(pre_s, lb_s)
+            comments=[
+                f'pred = {pre.item()}\n'
+                f'label = {lb.item()}\n'
+                f'loss = {loss.item(): .3f}'
+                for pre, lb, loss in zip(pre_s, lb_s, loss_es)
             ],
-            text_size=10, border_size=5,
-            required_shape=(720, 1280)
+            text_size=15, border_size=5,
+            required_shape=(750, 1500)
         )
         return ret
 
