@@ -1,3 +1,5 @@
+import torch
+
 import utils.func.log_tools as ltools
 import utils.func.torch_tools as ttools
 from data_related import data_related as dr
@@ -6,14 +8,15 @@ from networks.nets.adawzynet import AdaWZYNet as Net
 
 net_name = Net.__name__.lower()
 max_load = 5000
-read_queue = range(1, 4)
+read_queue = [114]
 device = 'cpu'
 log_path = f'../../log/{net_name}_log.csv'
 
 print('正在整理数据……')
+# 请注意data_portion太低，可能会导致独热编码的label.shape变化！
 data = DataSet(
     where='../../data/', which='2023-11-12-17.55', module=Net,
-    data_portion=0.01, lazy=False
+    data_portion=0.5, lazy=False
 )
 acc_func = DataSet.accuracy
 
@@ -30,18 +33,19 @@ for exp_no in read_queue:
         f'---------------------------'
     )
     # 构建网络
-    net = Net(
-        DataSet.fea_channel,
-        test_ds.feature_shape[1], 2, [test_ds.label_shape[0]],
-        base_channels=int(hp['base']), device=device
-    )
-    net.load_state_dict_(f'../../log/trained_net/{net_name}/{exp_no}.ptsd')
+    try:
+        net = Net(
+            DataSet.fea_channel,
+            test_ds.feature_shape[1], 2, [test_ds.label_shape[0]],
+            base_channels=int(hp['base']), device=device,
+            init_meth='state', init_args=(f'../../log/trained_net/{net_name}/{exp_no}.ptsd', )
+        )
+    except FileNotFoundError:
+        net = torch.load(f'../../log/trained_net/{net_name}/{exp_no}.ptm')
 
     results = net.predict_(
-        data_iter,
-        DataSet.accuracy,
-        ttools.get_loss(hp['ls_fn']),
-        DataSet.unwrap_fn
+        data_iter, DataSet.accuracy, DataSet.unwrap_fn,
+        ls_fn_args=(hp['ls_fn'], {'reduction': 'none'})
     )
     DataSet.save_fn(results, f'../../data/RESULT/{net_name}/{exp_no}/')
     print(
