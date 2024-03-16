@@ -57,13 +57,13 @@ for trainer in cp:
         # 进行训练准备
         net.prepare_training(
             (optim_str, {'lr': lr, 'w_decay': w_decay}),
-            ([], ()), (ls_fn, ), {}
+            ([], ()), (ls_fn, )
         )
         history = net.train_(
             train_iter, acc_func, n_epochs, valid_iter=valid_iter
         )
 
         # 测试
-        test_log = net.test_(test_iter, acc_func)
+        test_log = net.test_(test_iter, acc_func, ls_fn_args=(ls_fn, ))
         cp.register_result(history, test_log)
         del history, net
