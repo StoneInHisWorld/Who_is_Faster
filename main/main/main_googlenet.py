@@ -15,10 +15,11 @@ cp = ControlPanel(
 )
 
 print('正在整理数据……')
+version = '2'
 data = DataSet(
     where='../../data/', which='2023-11-12-17.55', module=Net,
     data_portion=cp['data_portion'], lazy=cp['lazy'],
-    f_req_sha=Net.required_shape
+    f_req_sha=Net.get_required_shape(version)
 )
 acc_func = DataSet.accuracy
 
@@ -47,7 +48,7 @@ for trainer in cp:
         print(f'正在构造{net_name}……')
         # 构建网络
         net = Net(
-            DataSet.fea_channel, train_ds.label_shape,
+            DataSet.fea_channel, train_ds.label_shape, version=version,
             device=device, init_meth=init_meth
         )
         trainer.register_net(net)
