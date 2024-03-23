@@ -15,7 +15,7 @@ cp = ControlPanel(
 )
 
 print('正在整理数据……')
-version = '2'
+version = '1'
 data = DataSet(
     where='../../data/', which='2023-11-12-17.55', module=Net,
     data_portion=cp['data_portion'], lazy=cp['lazy'],
