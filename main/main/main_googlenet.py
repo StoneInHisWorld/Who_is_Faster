@@ -25,7 +25,6 @@ acc_func = DataSet.accuracy
 
 print('数据预处理中……')
 train_ds, test_ds = data.to_dataset()
-train_sampler, valid_sampler = dr.split_data(train_ds, 0.8, 0, 0.2)
 dataset_name = DataSet.__class__.__name__
 del data
 
@@ -33,16 +32,29 @@ del data
 for trainer in cp:
     with trainer as hps:
         # 读取训练超参数
-        n_epochs, batch_size, ls_fn, lr, optim_str, w_decay, init_meth, bn_momen, dropout_rate,\
+        n_epochs, batch_size, ls_fn, lr, optim_str, w_decay, init_meth, step_size, gamma, k,\
             comment = hps
         device = cp.device
         for ds in [train_ds, test_ds]:
             ds.to(device)
-        # 获取数据迭代器并注册数据预处理函数
-        train_iter, valid_iter = [
-            dr.to_loader(train_ds, batch_size, sampler=sampler)
-            for sampler in [train_sampler, valid_sampler]
-        ]
+        if k == 1:
+            train_sampler, valid_sampler = dr.split_data(train_ds, 0.8, 0, 0.2)
+            # 获取数据迭代器并注册数据预处理函数
+            train_iter, valid_iter = [
+                dr.to_loader(train_ds, batch_size, sampler=sampler)
+                for sampler in [train_sampler, valid_sampler]
+            ]
+        elif k > 1:
+            # 使用k-fold机制
+            train_sampler_iter = dr.k_fold_split(train_ds, k=k)
+            train_iter = (
+                (dr.to_loader(train_ds, batch_size, sampler=train_sampler),
+                 dr.to_loader(train_ds, sampler=valid_sampler))
+                for train_sampler, valid_sampler in train_sampler_iter
+            )  # 将抽取器遍历，构造加载器
+            valid_iter = None
+        else:
+            raise ValueError(f'k值={k}错误，k要求为大于等1的整数！')
         test_iter = dr.to_loader(test_ds, batch_size)
 
         print(f'正在构造{net_name}……')
@@ -60,7 +72,7 @@ for trainer in cp:
             ([], ()), (ls_fn, )
         )
         history = net.train_(
-            train_iter, acc_func, n_epochs, valid_iter=valid_iter
+            train_iter, acc_func, n_epochs, valid_iter=valid_iter, k=k
         )
 
         # 测试
