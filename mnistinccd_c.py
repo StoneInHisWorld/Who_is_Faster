@@ -3,6 +3,7 @@ from typing import Iterable, Any, Sized, List
 
 import numpy as np
 import pandas as pd
+import skimage.transform
 import torch
 from PIL.Image import Image
 from tqdm import tqdm
@@ -227,6 +228,33 @@ class MNISTinCCD_C(SelfDefinedDataSet):
             lambda fea: itools.mean_LI_of_holes(fea, hole_pos, hole_size),
             lambda fea: itools.extract_and_cat_holes(
                 fea, hole_pos, hole_size, n_row, n_col
+            ),
+            lambda d: torch.from_numpy(d),
+            lambda d: d.type(torch.float32),
+            lambda d: normalize(d),
+        ]
+        self.lb_preprocesses = [
+            lambda d: pd.get_dummies(d),
+            lambda fea: np.array(fea),
+            lambda d: torch.from_numpy(d),
+            lambda d: d.type(torch.float32),
+        ]
+
+    def GoogLeNet_preprocesses(self):
+        self.feaIndex_preprocesses = [
+            lambda d: np.array(d),
+        ]
+        self.lbIndex_preprocesses = [
+            lambda d: np.array(d),
+        ]
+        self.fea_preprocesses = [
+            lambda fea: np.array(fea),
+            lambda fea: itools.mean_LI_of_holes(fea, hole_pos, hole_size),
+            lambda fea: itools.extract_and_cat_holes(
+                fea, hole_pos, hole_size, n_row, n_col
+            ),
+            lambda d: skimage.transform.resize(
+                d, [len(d), self.fea_channel, *self.f_required_shape]
             ),
             lambda d: torch.from_numpy(d),
             lambda d: d.type(torch.float32),
