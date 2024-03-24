@@ -8,7 +8,7 @@ import torch
 from PIL.Image import Image
 from tqdm import tqdm
 
-import data_related.data_related
+import data_related.data_related as dr
 import utils.func.img_tools as itools
 import utils.func.pytools as pytools
 import utils.func.tensor_tools as ttools
@@ -136,7 +136,7 @@ class MNISTinCCD_C(SelfDefinedDataSet):
                         pbar.update(1)
                     return ret
 
-            data_slice = pytools.iterable_multi_process(index, task, True, n_worker, '读取特征集图片中……')
+                data_slice = pytools.iterable_multi_process(index, task, True, n_worker)
         else:
             with tqdm(index, unit='张', position=0, desc=f"读取特征集图片中……", mininterval=1, leave=True) as pbar:
                 for index in pbar:
@@ -156,8 +156,9 @@ class MNISTinCCD_C(SelfDefinedDataSet):
         return index
 
     @staticmethod
-    def accuracy(Y_HAT: torch.Tensor, Y: torch.Tensor, size_average=True) -> torch.Tensor or float:
-        return data_related.data_related.single_argmax_accuracy(Y_HAT, Y, size_average)
+    def get_criterion_a():
+        return dr.single_argmax_accuracy
+        # return data_related.data_related.single_argmax_accuracy(Y_HAT, Y, size_average)
 
     @staticmethod
     def unwrap_fn(inputs, predictions, labels, acc_s, loss_es, comments) -> Any:
