@@ -32,7 +32,7 @@ del data
 for trainer in cp:
     with trainer as hps:
         # 读取训练超参数
-        n_epochs, batch_size, ls_fn, lr, optim_str, w_decay, init_meth, step_size, gamma, k,\
+        n_epochs, batch_size, ls_fn, lr, optim_str, w_decay, init_meth, step_size, gamma, k, dropout_rate,\
             comment = hps
         device = cp.device
         for ds in [train_ds, test_ds]:
@@ -60,8 +60,8 @@ for trainer in cp:
         print(f'正在构造{net_name}……')
         # 构建网络
         net = Net(
-            DataSet.fea_channel, train_ds.label_shape, version=version,
-            device=device, init_meth=init_meth
+            DataSet.fea_channel, train_ds.label_shape, dropout_rate=dropout_rate,
+            version=version, device=device, init_meth=init_meth
         )
         trainer.register_net(net)
 
