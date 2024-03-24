@@ -21,7 +21,7 @@ data = DataSet(
     data_portion=cp['data_portion'], lazy=cp['lazy'],
     f_req_sha=Net.get_required_shape(version)
 )
-acc_func = DataSet.accuracy
+criterion_a = DataSet.get_criterion_a()
 
 print('数据预处理中……')
 train_ds, test_ds = data.to_dataset()
@@ -72,10 +72,10 @@ for trainer in cp:
             ([], ()), (ls_fn, )
         )
         history = net.train_(
-            train_iter, acc_func, n_epochs, valid_iter=valid_iter, k=k
+            train_iter, criterion_a, n_epochs, valid_iter=valid_iter, k=k
         )
 
         # 测试
-        test_log = net.test_(test_iter, acc_func, ls_fn_args=(ls_fn, ))
+        test_log = net.test_(test_iter, criterion_a, ls_fn_args=(ls_fn,))
         cp.register_result(history, test_log)
         del history, net
