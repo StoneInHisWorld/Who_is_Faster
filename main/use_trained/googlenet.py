@@ -3,11 +3,11 @@ import torch
 import utils.func.log_tools as ltools
 from data_related import data_related as dr
 from mnistinccd_c import MNISTinCCD_C as DataSet
-from networks.nets.adawzynet import AdaWZYNet as Net
+from networks.nets.googlenet import GoogLeNet as Net
 
 net_name = Net.__name__.lower()
 max_load = 5000
-read_queue = [30, 31, 32]
+read_queue = [33, 34]
 device = 'cpu'
 log_root = '../../log/'
 log_path = log_root + f'{net_name}_log.csv'
@@ -35,9 +35,8 @@ for exp_no in read_queue:
     # 构建网络
     try:
         net = Net(
-            DataSet.fea_channel,
-            test_ds.feature_shape[1], 2, [test_ds.label_shape[0]],
-            base_channels=int(hp['base']), device=device,
+            DataSet.fea_channel, test_ds.label_shape,
+            version="2", device=device,
             init_meth='state', init_args=(log_root + f'trained_net/{net_name}/{exp_no}.ptsd', )
         )
     except FileNotFoundError:
