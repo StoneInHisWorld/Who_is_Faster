@@ -1,5 +1,5 @@
 import os
-from typing import Iterable, Any, Sized, List
+from typing import Iterable, Any, Sized
 
 import numpy as np
 import pandas as pd
@@ -8,7 +8,7 @@ import torch
 from PIL.Image import Image
 from tqdm import tqdm
 
-import data_related.data_related as dr
+import data_related.criteria
 import utils.func.img_tools as itools
 import utils.func.pytools as pytools
 import utils.func.tensor_tools as ttools
@@ -157,7 +157,7 @@ class MNISTinCCD_C(SelfDefinedDataSet):
 
     @staticmethod
     def get_criterion_a():
-        return dr.single_argmax_accuracy
+        return data_related.criteria.ARGMAX
         # return data_related.data_related.single_argmax_accuracy(Y_HAT, Y, size_average)
 
     @staticmethod
@@ -179,7 +179,7 @@ class MNISTinCCD_C(SelfDefinedDataSet):
                 for pre, lb, loss in zip(pre_s, lb_s, loss_es)
             ],
             text_size=15, border_size=5,
-            required_shape=(750, 1500)
+            required_shape=(1000, 1500)
         )
         return ret
 
