@@ -242,6 +242,31 @@ class MNISTinCCD_C(SelfDefinedDataSet):
         ]
 
     def GoogLeNet_preprocesses(self):
+        # self.feaIndex_preprocesses = [
+        #     lambda d: np.array(d),
+        # ]
+        # self.lbIndex_preprocesses = [
+        #     lambda d: np.array(d),
+        # ]
+        # self.fea_preprocesses = [
+        #     lambda fea: np.array(fea),
+        #     lambda fea: itools.mean_LI_of_holes(fea, hole_pos, hole_size),
+        #     lambda fea: itools.extract_and_cat_holes(
+        #         fea, hole_pos, hole_size, n_row, n_col
+        #     ),
+        #     lambda d: skimage.transform.resize(
+        #         d, [len(d), self.fea_channel, *self.f_required_shape]
+        #     ),
+        #     lambda d: torch.from_numpy(d),
+        #     lambda d: d.type(torch.float32),
+        #     lambda d: normalize(d),
+        # ]
+        # self.lb_preprocesses = [
+        #     lambda d: pd.get_dummies(d),
+        #     lambda fea: np.array(fea),
+        #     lambda d: torch.from_numpy(d),
+        #     lambda d: d.type(torch.float32),
+        # ]
         self.feaIndex_preprocesses = [
             lambda d: np.array(d),
         ]
@@ -250,22 +275,23 @@ class MNISTinCCD_C(SelfDefinedDataSet):
         ]
         self.fea_preprocesses = [
             lambda fea: np.array(fea),
-            lambda fea: itools.mean_LI_of_holes(fea, hole_pos, hole_size),
-            lambda fea: itools.extract_and_cat_holes(
-                fea, hole_pos, hole_size, n_row, n_col
+            lambda fea: itools.get_mean_LI_of_holes(fea, hole_pos, hole_size),
+            lambda mean_LI: itools.blend(
+                [self.f_required_shape for _ in range(len(mean_LI))], mean_LI,
+                [n_row for _ in range(len(mean_LI))],
+                [n_col for _ in range(len(mean_LI))],
+                self.fea_mode
             ),
-            lambda d: skimage.transform.resize(
-                d, [len(d), self.fea_channel, *self.f_required_shape]
-            ),
+            lambda d: np.stack(d),
             lambda d: torch.from_numpy(d),
             lambda d: d.type(torch.float32),
             lambda d: normalize(d),
         ]
         self.lb_preprocesses = [
-            lambda d: pd.get_dummies(d),
             lambda fea: np.array(fea),
             lambda d: torch.from_numpy(d),
             lambda d: d.type(torch.float32),
+            lambda d: normalize(d),
         ]
 
     @property
