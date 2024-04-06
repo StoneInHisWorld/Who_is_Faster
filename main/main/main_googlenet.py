@@ -15,7 +15,7 @@ cp = ControlPanel(
 )
 
 print('正在整理数据……')
-version = '1'
+version = '3'
 data = DataSet(
     where='../../data/', which='2023-11-12-17.55', module=Net,
     data_portion=cp['data_portion'], lazy=cp['lazy'],
@@ -68,14 +68,15 @@ for trainer in cp:
         print(f'本次训练位于设备{device}上')
         # 进行训练准备
         net.prepare_training(
-            (optim_str, {'lr': lr, 'w_decay': w_decay}),
-            ([], ()), (ls_fn, )
+            ((optim_str, {}), ),
+            (('original', {}), ),
+            (('original', {}), )
         )
         history = net.train_(
             train_iter, criterion_a, n_epochs, valid_iter=valid_iter, k=k
         )
 
         # 测试
-        test_log = net.test_(test_iter, criterion_a, ls_fn_args=(ls_fn,))
+        test_log = net.test_(test_iter, criterion_a, ls_fn_args=[('original', {}), ])
         cp.register_result(history, test_log)
         del history, net
