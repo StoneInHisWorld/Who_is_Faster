@@ -288,10 +288,10 @@ class MNISTinCCD_C(SelfDefinedDataSet):
             lambda d: normalize(d),
         ]
         self.lb_preprocesses = [
+            lambda d: pd.get_dummies(d),
             lambda fea: np.array(fea),
             lambda d: torch.from_numpy(d),
             lambda d: d.type(torch.float32),
-            lambda d: normalize(d),
         ]
 
     @property
