@@ -33,8 +33,8 @@ if __name__ == '__main__':
     for trainer in cp:
         with trainer as hps:
             # 读取训练超参数
-            n_epochs, batch_size, ls_fn, lr, optim_str, w_decay, init_meth, step_size, gamma, k, dropout_rate,\
-                comment = hps
+            version, n_epochs, batch_size, lf_str, lr, optim_str, w_decay, init_meth, scheduler_str, \
+                step_size, gamma, k, dropout_rate, comment = hps
             device = cp.device
             n_workers = cp['n_workers']
             pin_memory = cp['pin_memory']
@@ -73,18 +73,18 @@ if __name__ == '__main__':
             )
             trainer.register_net(net)
 
-        print(f'本次训练位于设备{device}上')
-        # 进行训练准备
-        net.prepare_training(
-            ((optim_str, {}), ),
-            (('original', {}), ),
-            (('original', {}), )
-        )
-        history = net.train_(
-            train_iter, criterion_a, n_epochs, valid_iter=valid_iter, k=k
-        )
+            print(f'本次训练位于设备{device}上')
+            # 进行训练准备
+            net.prepare_training(
+                ((optim_str, {}), ),
+                ((scheduler_str, {}), ),
+                ((lf_str, {}), )
+            )
+            history = net.train_(
+                train_iter, criterion_a, n_epochs, valid_iter=valid_iter, k=k
+            )
 
-        # 测试
-        test_log = net.test_(test_iter, criterion_a, ls_fn_args=[('original', {}), ])
-        cp.register_result(history, test_log)
-        del history, net
+            # 测试
+            test_log = net.test_(test_iter, criterion_a, ls_fn_args=[(lf_str, {}), ])
+            cp.register_result(history, test_log)
+            del history, net
