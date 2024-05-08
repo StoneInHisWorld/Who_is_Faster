@@ -1,0 +1,44 @@
+{
+	"version": [
+		"1"
+	],
+	"n_epochs": [
+		100, 100, 100
+	],
+	"batch_size": [
+		32
+	],
+	"lf_str": [
+		"mse"
+	],
+	"lr": [
+		5e-5
+	],
+	"optim_str": [
+		"adam"
+	],
+	"w_decay": [
+		0
+	],
+	"init_meth": [
+		"zero"
+	],
+	"scheduler_str": [
+		"step"
+	],
+	"step_size": [
+		12
+	],
+	"gamma": [
+		1
+	],
+	"k": [
+		1
+	],
+	"dropout_rate": [
+		0.3
+	],
+	"comment": [
+		"不进行内存监控，使用p&bkgenerator，数据取出后再放入显存，数据量0.7"
+	]
+}

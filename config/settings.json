@@ -1,0 +1,13 @@
+{
+	"data_portion": 0.1,
+	"random_seed": 42,
+	"plot_mute": true,
+	"plot_history": "no",
+	"print_net": false,
+	"save_net": "state",
+	"device": "cuda:0",
+	"lazy": false,
+	"n_workers": 0,
+	"pin_memory": true,
+	"prefetch_factor": 0
+}
