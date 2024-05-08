@@ -162,5 +162,3 @@ cython_debug/
 #pycharm .idea
 /data/
 .idea/*
-/config/*
-/log/*
