@@ -1,2 +1,2 @@
-# WhoisFaster
+# Who_is_Faster
 研究Pytorch神经网络训练过程中各种有关GPU内存的参数设置对训练速度、显存和内存占用的影响
