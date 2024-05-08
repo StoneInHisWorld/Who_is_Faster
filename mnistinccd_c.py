@@ -3,10 +3,13 @@ from typing import Iterable, Any, Sized
 
 import numpy as np
 import pandas as pd
-import skimage.transform
 import torch
 from PIL.Image import Image
 from tqdm import tqdm
+
+import sys
+
+sys.path.append('../../../../torch_utils')
 
 import data_related.criteria
 import utils.func.img_tools as itools
