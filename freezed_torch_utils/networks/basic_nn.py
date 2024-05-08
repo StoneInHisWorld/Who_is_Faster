@@ -7,10 +7,10 @@ from torch.utils import checkpoint
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-import utils.func.torch_tools as ttools
-from data_related.dataloader import LazyDataLoader
-from networks.trainer import Trainer
-from utils.accumulator import Accumulator
+import freezed_torch_utils.utils.func.torch_tools as ttools
+from freezed_torch_utils.data_related.dataloader import LazyDataLoader
+from freezed_torch_utils.networks.trainer import Trainer
+from freezed_torch_utils.utils.accumulator import Accumulator
 
 
 class BasicNN(nn.Sequential):

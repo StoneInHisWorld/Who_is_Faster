@@ -1,17 +1,16 @@
-import torch.cuda
-
 import sys
+
+import torch.cuda
 
 sys.path.append('./torch_utils_freezed')
 # TODO：请更换自己的数据集
 sys.path.append('../../DPC')
 
-import torch_utils_freezed
-from torch_utils_freezed.data_related import data_related as dr
+from freezed_torch_utils.data_related import data_related as dr
 # TODO：请更换自己的数据集
 from mnistinccd_c import MNISTinCCD_C as DataSet
-from networks.nets.googlenet import GoogLeNet as Net
-from utils.hypa_control import ControlPanel
+from freezed_torch_utils.networks.nets.googlenet import GoogLeNet as Net
+from freezed_torch_utils.utils.hypa_control import ControlPanel
 
 if __name__ == '__main__':
     net_name = Net.__name__.lower()

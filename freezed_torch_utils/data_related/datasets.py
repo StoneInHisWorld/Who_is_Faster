@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset as torch_ds, DataLoader
 from tqdm import tqdm
 
-import utils.func.pytools as tools
+import freezed_torch_utils.utils.func.pytools as tools
 
 
 class DataSet(torch_ds):
