@@ -5,9 +5,10 @@ import pandas as pd
 import torch
 from torchsummary import summary
 
-import utils.func.log_tools as ltools
-from utils.func import pytools
-from utils.trainer import Trainer
+
+import freezed_torch_utils.utils.func.log_tools as ltools
+import freezed_torch_utils.utils.func.pytools as pytools
+from freezed_torch_utils.utils.trainer import Trainer
 
 
 def init_log(path):
